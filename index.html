@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeLink - Blood Availability Finder</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Leaflet CSS (Maps) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- Custom Config for Tailwind to match "Premium" aesthetic -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#E11D48', // Rose-600
+                        secondary: '#BE123C', // Rose-700
+                        dark: '#0F172A', // Slate-900
+                        light: '#F8FAFC', // Slate-50
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="bg-light text-slate-800 font-sans antialiased overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all duration-300"
+        id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="app.navigate('home')">
+                    <i class="fa-solid fa-heart-pulse text-primary text-3xl mr-2 animate-pulse"></i>
+                    <span class="font-bold text-2xl tracking-tight text-slate-900">Life<span
+                            class="text-primary">Link</span></span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center" id="nav-links">
+                    <!-- Links will be injected by JS based on Auth state -->
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button class="text-slate-600 hover:text-primary focus:outline-none" onclick="toggleMobileMenu()">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div class="md:hidden hidden bg-white border-t border-slate-100 absolute w-full" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3" id="mobile-nav-links">
+                <!-- Mobile links injected by JS -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area - Views will be switched here -->
+    <main id="app-root" class="pt-16 min-h-screen relative">
+        <!-- Views will be injected here by app.js -->
+        <div id="loading" class="flex items-center justify-center h-[80vh]">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-12 pb-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center mb-4">
+                        <i class="fa-solid fa-heart-pulse text-primary text-2xl mr-2"></i>
+                        <span class="font-bold text-xl">LifeLink</span>
+                    </div>
+                    <p class="text-slate-400 text-sm">Connecting blood donors with those in need. Fast, secure, and
+                        life-saving.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-slate-200">Quick Links</h3>
+                    <ul class="space-y-2 text-slate-400 text-sm">
+                        <li><a href="#" onclick="app.navigate('home')" class="hover:text-primary transition">Home</a>
+                        </li>
+                        <li><a href="#" onclick="app.navigate('search')" class="hover:text-primary transition">Find
+                                Blood</a></li>
+                        <li><a href="#" onclick="app.navigate('register')" class="hover:text-primary transition">Donate
+                                Now</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-slate-200">Contact</h3>
+                    <ul class="space-y-2 text-slate-400 text-sm">
+                        <li><i class="fa-solid fa-phone mr-2 text-primary"></i> +91 98765 43210</li>
+                        <li><i class="fa-solid fa-envelope mr-2 text-primary"></i> help@lifelink.com</li>
+                        <li><i class="fa-solid fa-location-dot mr-2 text-primary"></i> Chennai, India</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-slate-200">Emergency?</h3>
+                    <button onclick="app.navigate('search')"
+                        class="w-full bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded shadow-lg shadow-primary/30 transition-all transform hover:scale-105">
+                        <i class="fa-solid fa-truck-medical mr-2"></i> Request Blood
+                    </button>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 mt-12 pt-6 text-center text-slate-500 text-sm">
+                &copy; 2026 LifeLink. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- App Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
